@@ -18,10 +18,10 @@
 // - [x] 에스프레소 메뉴를 페이지에 렌더링한다.
 
 // TODO: 품절
-// - [] 품절 버튼 추가
-// - [] sold-out class를 추가하여 상태를 변경한다.
-// - [] 품절 버튼을 클릭하면 localStorage에 상태값이 저장된다.
-// - [] 클릭이벤트에서 가장 가까운 li 태그의 class 속성에 sold-out을 추간한다.
+// - [x] 품절 버튼 추가
+// - [x] sold-out class를 추가하여 상태를 변경한다.
+// - [x] 품절 버튼을 클릭하면 localStorage에 상태값이 저장된다.
+// - [x] 클릭이벤트에서 가장 가까운 li 태그의 class 속성에 sold-out을 추간한다.
 
 // HTML로 부터 태그를 가져올 때 관용적으로 '$'기호 사용
 const $ = selector => document.querySelector(selector);
@@ -68,7 +68,15 @@ function App() {
           menuItem,
           index
         ) => `<li data-menu-id="${index}" class="menu-list-item d-flex items-center py-2">
-      <span class="w-100 pl-2 menu-name">${menuItem.name}</span>
+      <span class="w-100 pl-2 menu-name ${
+        menuItem.soldOut ? "sold-out" : ""
+      }">${menuItem.name}</span>
+      <button
+        type="button"
+        class="bg-gray-50 text-gray-500 text-sm mr-1 menu-sold-out-button"
+      >
+        품절
+      </button>
       <button
         type="button"
         class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button"
@@ -133,13 +141,27 @@ function App() {
     }
   };
 
+  const soldOutMenu = e => {
+    const { menuId } = e.target.closest("li").dataset;
+    this.menu[this.currentCategory][menuId].soldOut =
+      !this.menu[this.currentCategory][menuId].soldOut;
+    store.setLocalStorage(this.menu);
+    render();
+  };
+
   ul.addEventListener("click", e => {
     if (e.target.classList.contains("menu-edit-button")) {
       updateMenuName(e);
+      return;
     }
 
     if (e.target.classList.contains("menu-remove-button")) {
       removeMenuName(e);
+      return;
+    }
+
+    if (e.target.classList.contains("menu-sold-out-button")) {
+      soldOutMenu(e);
     }
   });
 

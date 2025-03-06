@@ -5,7 +5,7 @@ import MenuApi from "./api/index.js";
 
 // TODO: 사용자 경험
 // - [] API 통신이 실패하는 경우에 대해 사용자가 알 수 있게 alert으로 예외처리를 진행한다.
-// - [] 중복되는 메뉴는 추가할 수 없다.
+// - [x] 중복되는 메뉴는 추가할 수 없다.
 
 function App() {
   const form = $("#menu-form");
@@ -79,6 +79,16 @@ function App() {
     const menuName = input.value;
     if (menuName === "") {
       alert("에스프레소 메뉴 이름을 입력해주세요.");
+    }
+
+    // 메뉴 중복 추가 방지
+    const duplicatedMenu = this.menu[this.currentCategory].find(
+      menuItem => menuItem.name === menuName
+    );
+    if (duplicatedMenu) {
+      alert("이미 등록된 메뉴입니다. 다시 입력해주세요.");
+      input.value = "";
+      return;
     }
     await MenuApi.createMenu(this.currentCategory, menuName);
     render();
